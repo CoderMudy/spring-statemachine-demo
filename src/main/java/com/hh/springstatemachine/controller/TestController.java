@@ -39,6 +39,7 @@ public class TestController {
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setId(9999L);
         orderEntity.setStatus(OrderStates.核保通过.getState());
+//        orderEntity.setStatus(OrderStates.未处理.getState());
         Map<String, Object> attachMap = new HashMap<>();
         attachMap.put("1", "1");
         StateMachineSendResult stateMachineSendResult = orderStateMachine.modifyOrderStatus(OrderEvents.支付事件, orderEntity, attachMap);

@@ -21,6 +21,6 @@ public class PaySuccessGuard extends BaseOrderGuard {
     @Override
     public Boolean doEvaluate(StateContext<OrderStates, OrderEvents> context) {
         log.info("支付成功 guard ...");
-        return true;
+        return false;
     }
 }

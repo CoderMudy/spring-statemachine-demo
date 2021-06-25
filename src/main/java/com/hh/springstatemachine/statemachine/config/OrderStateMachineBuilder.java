@@ -68,6 +68,9 @@ public class OrderStateMachineBuilder {
     private PaySuccessJumpAction paySuccessJumpAction;
 
     @Autowired
+    private PayDuringJumpAction payDuringJumpAction;
+
+    @Autowired
     private CreateOrderAction createOrderAction;
 
     /**
@@ -110,8 +113,11 @@ public class OrderStateMachineBuilder {
                 .first(OrderStates.支付成功, paySuccessGuard, paySuccessAction)
                 .then(OrderStates.支付中, payDuringGuard, payDuringAction)
                 .last(OrderStates.支付失败, payFailAction)
+
                 .and()
                 .withInternal().source(OrderStates.支付成功).action(paySuccessJumpAction)
+                .and()
+                .withInternal().source(OrderStates.支付中).action(payDuringJumpAction)
 
                 //支付成功 -> 承保中
                 //            承保中 -> 承保成功
@@ -119,6 +125,14 @@ public class OrderStateMachineBuilder {
                 .and()
                 .withExternal()
                 .source(OrderStates.支付成功).target(OrderStates.承保中).event(OrderEvents.承保事件).action(underWriteAction, underWriteErrorAction)
+                .and()
+                .withChoice().source(OrderStates.承保中)
+                .first(OrderStates.承保成功, underWriteSuccessGuard)
+                .last(OrderStates.承保失败)
+
+                .and()
+                .withExternal()
+                .source(OrderStates.支付中).target(OrderStates.承保中).event(OrderEvents.承保事件).action(underWriteAction, underWriteErrorAction)
                 .and()
                 .withChoice().source(OrderStates.承保中)
                 .first(OrderStates.承保成功, underWriteSuccessGuard)
